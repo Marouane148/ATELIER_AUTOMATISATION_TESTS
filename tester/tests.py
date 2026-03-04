@@ -19,22 +19,22 @@ class TestResult:
         }
 
 class QuotableTests:
-    """Tests pour l'API Quotable."""
+    """Tests pour l'API JSONPlaceholder."""
     
     def __init__(self, client):
         self.client = client
         self.results: List[TestResult] = []
     
     def test_random_quote_200(self) -> TestResult:
-        """Test 1: GET /random retourne HTTP 200 + JSON valide."""
-        status, data, latency = self.client.get("/random")
+        """Test 1: GET /posts/1 retourne HTTP 200 + JSON valide."""
+        status, data, latency = self.client.get("/posts/1")
         
         passed = (status == 200 and 
                  isinstance(data, dict) and 
-                 "content" in data and 
-                 "author" in data)
+                 "title" in data and 
+                 "body" in data)
         
-        result = TestResult("GET /random: HTTP 200 + valid JSON", 
+        result = TestResult("GET /posts/1: HTTP 200 + valid JSON", 
                            "PASS" if passed else "FAIL", 
                            latency)
         
@@ -42,54 +42,52 @@ class QuotableTests:
             result.details = f"HTTP {status}"
         elif not isinstance(data, dict):
             result.details = "Not JSON"
-        elif "content" not in data or "author" not in data:
-            result.details = "Missing content/author"
+        elif "title" not in data or "body" not in data:
+            result.details = "Missing title/body"
         
         return result
     
     def test_quotes_list_endpoint(self) -> TestResult:
-        """Test 2: GET /quotes retourne liste."""
-        status, data, latency = self.client.get("/quotes", params={"limit": 5})
+        """Test 2: GET /posts retourne liste."""
+        status, data, latency = self.client.get("/posts", params={"_limit": 5})
         
         passed = (status == 200 and 
-                 "results" in data and 
-                 isinstance(data["results"], list) and 
-                 len(data["results"]) > 0)
+                 isinstance(data, list) and 
+                 len(data) > 0)
         
-        result = TestResult("GET /quotes: returns results list", 
+        result = TestResult("GET /posts: returns list", 
                            "PASS" if passed else "FAIL", 
                            latency)
         
         if status != 200:
             result.details = f"HTTP {status}"
-        elif not isinstance(data.get("results"), list):
-            result.details = "No results array"
+        elif not isinstance(data, list):
+            result.details = "Not a list"
         
         return result
     
     def test_authors_endpoint(self) -> TestResult:
-        """Test 3: GET /authors retourne liste d'auteurs."""
-        status, data, latency = self.client.get("/authors")
+        """Test 3: GET /users retourne liste d'utilisateurs."""
+        status, data, latency = self.client.get("/users")
         
         passed = (status == 200 and 
-                 "results" in data and 
-                 isinstance(data["results"], list) and 
-                 len(data["results"]) > 0)
+                 isinstance(data, list) and 
+                 len(data) > 0)
         
-        result = TestResult("GET /authors: returns authors list", 
+        result = TestResult("GET /users: returns users list", 
                            "PASS" if passed else "FAIL", 
                            latency)
         
         if status != 200:
             result.details = f"HTTP {status}"
-        elif not isinstance(data.get("results"), list):
-            result.details = "No results array"
+        elif not isinstance(data, list):
+            result.details = "Not a list"
         
         return result
     
     def test_error_handling(self) -> TestResult:
         """Test 4: Gestion des erreurs (404 sur endpoint invalide)."""
-        status, data, latency = self.client.get("/invalid-endpoint")
+        status, data, latency = self.client.get("/invalid-endpoint-xyz")
         
         passed = status == 404
         

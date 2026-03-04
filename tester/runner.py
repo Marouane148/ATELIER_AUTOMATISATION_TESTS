@@ -8,9 +8,9 @@ from .tests import QuotableTests, TestResult
 import statistics
 
 class TestRunner:
-    def __init__(self, api_base_url: str):
+    def __init__(self, api_base_url: str = "https://jsonplaceholder.typicode.com"):
         self.api_base_url = api_base_url
-        self.client = APIClient(api_base_url, timeout=3)
+        self.client = APIClient(api_base_url, timeout=5)
     
     def run(self) -> Dict[str, Any]:
         """

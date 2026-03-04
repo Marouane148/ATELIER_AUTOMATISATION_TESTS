@@ -14,7 +14,7 @@ def consignes():
 def run_tests():
     """Exécute les tests et sauvegarde les résultats."""
     try:
-        runner = TestRunner("https://api.quotable.io")
+        runner = TestRunner("https://jsonplaceholder.typicode.com")
         result = runner.run()
         
         # Sauvegarde dans SQLite
